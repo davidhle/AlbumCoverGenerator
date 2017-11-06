@@ -47,3 +47,7 @@ a {
 	color: #262733;
 	border: solid 2px aliceblue;
 }
+
+#photo {
+	background: #fff url(../images/Loading.gif) no-repeat center;
+}

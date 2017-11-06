@@ -11,13 +11,31 @@ to repeatedly generate album names along with an album cover
 <head>
 <meta charset="utf-8">
 <title>Album Generator</title>
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.0/jquery.min.js"></script>
 	<link rel="stylesheet" href="assets/css/main.css">
 	<link rel="icon" href="assets/images/favicon.ico" type="image/x-icon">
 	<script>
-		// Flickr
-		var apiKey = 94706d0c5bb8c8ff54fc5cb2d88f3c07;
-		function generate(query) {
-			
+		// WordNik Album Name Generator
+		var wordNikAPI = 'b2586d6863a58469d900b018d4b07df77a423e19b940b2df9';
+		
+		// Pulls random photo from photo search
+		// of one of the words in the album name
+		var flickrAPI = '94706d0c5bb8c8ff54fc5cb2d88f3c07';
+		function getPhotos(query) {
+			$.ajax( {
+				url: 'https://api.flickr.com/services/rest/?method=flickr.photos.search&text=' + query + '+famous+landmarks&sort=relevance&format=json&nojsoncallback=1&api_key=' + flickrAPI,
+				success: function(data) {
+					var rand = Math.floor((Math.random() * (data.photos.photo.length)));
+					photo = eval(data.photos.photo[rand]);
+					
+					var imgUrl = "https://farm" + photo.farm + ".staticflickr.com/" + photo.server + "/" + photo.id + "_" + photo.secret + "_d.jpg";
+					
+					$('#photo').html('');
+					$('#photo').append('<img src="' + imgUrl + '" width="500" height="500"/>');
+				},
+				async: true,
+				dataType: "json"
+			});
 		}
 	</script>
 </head>
@@ -25,7 +43,7 @@ to repeatedly generate album names along with an album cover
 <body>
 	<h1 style="font-size: 50px">ALBUM GENERATOR</h1>
 	<div style="text-align: center">
-		<img style="width: 500px; height: 500px;"/>
+		<img id="photo" style="width: 500px; height: 500px;"/>
 	</div>
 	<br/>
 	<div style="text-align: center">
