@@ -12,8 +12,12 @@
 }
 
 html, body {
-	background: #262733;
+	background-image: linear-gradient( rgba(38, 39, 51, 0.7), rgba(0, 0, 0, 0.7) ), url(../images/background.jpg);
+    background-repeat: no-repeat;
+    background-size: cover;
 	align-items: center;
+	height: 100%;
+	width: 100%;
 }
 
 h1 {
@@ -34,6 +38,7 @@ a {
 	font-size: 15px;
 	align-self: center;
 	margin: 20px 10px;
+	background: rgba(38, 39, 51, 0.7);
 	
 	border: solid 2px #5BA1E1;
 	border-radius: 50px;
@@ -43,7 +48,7 @@ a {
 }
 
 .refreshButton:hover {
-	background-color: aliceblue;
+	background: rgba(230, 230, 255, .75);
 	color: #262733;
 	border: solid 2px aliceblue;
 }
