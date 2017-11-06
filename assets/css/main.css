@@ -6,14 +6,21 @@
 	src: url(../fonts/Montserrat-Regular.ttf);
 }
 
+@font-face {
+	font-family: IkarosLight;
+	src: url(../fonts/Ikaros-Light.otf);
+}
+
 html, body {
 	background: #262733;
 	align-items: center;
 }
 
 h1 {
+	font-family: IkarosLight;
 	color: #FFFFFF;
 	text-align: center;
+	margin: 0px;
 }
 
 a {
@@ -26,7 +33,7 @@ a {
 	font-weight: 100;
 	font-size: 15px;
 	align-self: center;
-	margin: 0;
+	margin: 20px 10px;
 	
 	border: solid 2px #5BA1E1;
 	border-radius: 50px;
@@ -37,6 +44,6 @@ a {
 
 .refreshButton:hover {
 	background-color: aliceblue;
-	color: #5BA1E1;
+	color: #262733;
 	border: solid 2px aliceblue;
 }
