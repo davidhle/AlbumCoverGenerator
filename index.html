@@ -18,7 +18,7 @@ to repeatedly generate album names along with an album cover
 // WordNik
 	var wordnikAPIKey = 'b2586d6863a58469d900b018d4b07df77a423e19b940b2df9';
 	var flickrAPIKey = '94706d0c5bb8c8ff54fc5cb2d88f3c07';
-	var nouns, adjective;
+	var noun, adjective;
 	
 	function getSeedWord() 
 	{
@@ -28,17 +28,35 @@ to repeatedly generate album names along with an album cover
 
 		console.log("Fetching seed word...");
 		var minCorpusCount = 100000;
+		// generate noun
 		$.ajax({
-		  url: "http://api.wordnik.com/v4/words.json/randomWords?hasDictionaryDef=false&includePartOfSpeech=noun&minCorpusCount=" + minCorpusCount + 			  
-			   "&maxCorpusCount=-1&minDictionaryCount=1&maxDictionaryCount=-1&minLength=5&maxLength=-1&limit=100&api_key=" + WordnikAPIKey,
+		  url: "http://api.wordnik.com:80/v4/words.json/randomWords?hasDictionaryDef=true&includePartOfSpeech=noun&minCorpusCount=" + minCorpusCount + "&maxCorpusCount=-1&minDictionaryCount=1&maxDictionaryCount=-1&minLength=5&maxLength=-1&limit=1&api_key=" + WordnikAPIKey,
 		  success: function(data) {
-			nouns = eval(data);
-			var word = nouns.pick().word;
+			noun = eval(data);
+			var word = noun.pick().word;
 			q = word;
 			console.log("	got seed word " + word);
 
-			$('#query').html('');
-			$('#query').append(word);
+			$('#noun').html('');
+			$('#noun').append(word);
+
+			generate(word);		
+		  },
+		  async: true,
+		  dataType:"json"
+		});
+		
+		// generate adjective
+		$.ajax({
+		  url: "http://api.wordnik.com:80/v4/words.json/randomWords?hasDictionaryDef=true&includePartOfSpeech=adjective&minCorpusCount=" + minCorpusCount + "&maxCorpusCount=-1&minDictionaryCount=1&maxDictionaryCount=-1&minLength=5&maxLength=-1&limit=1&api_key=" + WordnikAPIKey,
+		  success: function(data) {
+			noun = eval(data);
+			var word = noun.pick().word;
+			q = word;
+			console.log("	got seed word " + word);
+
+			$('#adjective').html('');
+			$('#adjective').append(word);
 
 			generate(word);		
 		  },
@@ -49,18 +67,16 @@ to repeatedly generate album names along with an album cover
 
 	function generate(query)
 	{
-		// IMAGE FOR DISPLAY
 		console.log("Fetching images for subject " + query); 
 		$.ajax({
 		  url: 'https://api.flickr.com/services/rest/?method=flickr.photos.search&text=' + query + '&format=json&nojsoncallback=1&api_key=' + FlickrAPIKey,
 		  success: function(data) {	
 			console.log("	got images");
-			// assemble Flickr image URL (as per https://www.flickr.com/services/api/misc.urls.html)
 			var photo = data.photos.photo.pick();
 			var imgUrl = "https://farm" + photo.farm + ".staticflickr.com/" + photo.server + "/" + photo.id + "_" + photo.secret + "_d.jpg";
 			
 			$('#imagebox').html('');
-			$('#imagebox').append('<img id="image" src="image.php?p=' + imgUrl + '"/>');
+			$('#imagebox').append('<img id="image" src="image.php?p=' + imgUrl + '" width="500px" height = "500px"/>');
 		  },
 		  async: true,
 		  dataType:"json"
@@ -72,6 +88,7 @@ to repeatedly generate album names along with an album cover
 <body>
 	<h1 style="font-size: 50px">ALBUM GENERATOR</h1>
 	<div style="text-align: center" id="imagebox">
+		<h2 id="noun"> </h2><h2 id="adjective"></h2>
 		<img id="image" style="width: 500px; height: 500px;" />
 	</div>
 	<br/>
