@@ -37,7 +37,7 @@ a {
 	font-weight: 100;
 	font-size: 15px;
 	align-self: center;
-	margin: 20px 10px;
+	margin: 25px 10px;
 	background: rgba(38, 39, 51, 0.7);
 	
 	border: solid 2px #5BA1E1;
@@ -54,5 +54,31 @@ a {
 }
 
 #image {
-	background: #fff url(../images/Loading.gif) no-repeat center;
+	background: no-repeat center;
+	object-fit:cover; 
+	width: 500px;
+	height: 500px;
+	filter: blur(3px);
 }
+
+#imagebox
+{
+	background: #fff url(../images/Loading.gif) no-repeat center;
+	overflow: hidden;
+	align-content: center;
+	height: 500px;
+	width: 500px;
+	margin-left: 425px;
+}
+
+#query, #adjective {
+	font-family: Montserrat;
+	text-align: center;
+	font-size: 25pt;
+	font-weight: bold;
+	line-height: 35pt;
+	letter-spacing: -3pt;
+	margin-top:-15px;
+	color: antiquewhite;
+}
+

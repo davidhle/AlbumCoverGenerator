@@ -6,39 +6,51 @@ Project 4
 
 My goal for this project is to create a website that allows the user
 to repeatedly generate album names along with an album cover
+
 -->
 <html>
 <head>
 <meta charset="utf-8">
 <title>Album Generator</title>
-	<link rel="stylesheet" href="assets/css/main.css">
-	<link rel="icon" href="assets/images/favicon.ico" type="image/x-icon">
-	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.0/jquery.min.js"></script>
-	<script>
-// WordNik
-	var wordnikAPIKey = 'b2586d6863a58469d900b018d4b07df77a423e19b940b2df9';
-	var flickrAPIKey = '94706d0c5bb8c8ff54fc5cb2d88f3c07';
-	var noun, adjective;
-	
+<link href="http://fonts.googleapis.com/css?family=Lily+Script+One" rel="stylesheet" type="text/css">
+<link rel="stylesheet" href="assets/css/main.css">
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.0/jquery.min.js"></script>
+<script>
+	var WordnikAPIKey = 'b2586d6863a58469d900b018d4b07df77a423e19b940b2df9';
+	var FlickrAPIKey = '94706d0c5bb8c8ff54fc5cb2d88f3c07';
+	var nouns;
+	var q;
+	// trusty array random picker
+	Array.prototype.pick = function() {
+		return this[Math.floor(Math.random()*this.length)];
+	}
+	String.prototype.toTitleCase = function () {
+    		return this.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
+	};
+	String.prototype.toSentence = function () {
+    		return this.charAt(0).toUpperCase() + this.slice(1);;
+	};
+
 	function getSeedWord() 
 	{
 		// clear everything
+		$('#slogan').html('');
+		$('#logo').html('');
 		$('#imagebox').html('');
 		$('#imagebox').append('<img id="image"/>');
 
-		console.log("Fetching seed word...");
 		var minCorpusCount = 100000;
-		// generate noun
 		$.ajax({
-		  url: "http://api.wordnik.com:80/v4/words.json/randomWords?hasDictionaryDef=true&includePartOfSpeech=noun&minCorpusCount=" + minCorpusCount + "&maxCorpusCount=-1&minDictionaryCount=1&maxDictionaryCount=-1&minLength=5&maxLength=-1&limit=1&api_key=" + WordnikAPIKey,
+		  url: "http://api.wordnik.com:80/v4/words.json/randomWords?hasDictionaryDef=true&includePartOfSpeech=noun&minCorpusCount=" + minCorpusCount + 			  
+			   "&maxCorpusCount=-1&minDictionaryCount=1&maxDictionaryCount=-1&minLength=5&maxLength=-1&limit=1&api_key=" + WordnikAPIKey,
 		  success: function(data) {
-			noun = eval(data);
-			var word = noun.pick().word;
+			nouns = eval(data);
+			var word = nouns.pick().word;
 			q = word;
 			console.log("	got seed word " + word);
 
-			$('#noun').html('');
-			$('#noun').append(word);
+			$('#query').html('');
+			$('#query').append(word);
 
 			generate(word);		
 		  },
@@ -46,12 +58,11 @@ to repeatedly generate album names along with an album cover
 		  dataType:"json"
 		});
 		
-		// generate adjective
 		$.ajax({
 		  url: "http://api.wordnik.com:80/v4/words.json/randomWords?hasDictionaryDef=true&includePartOfSpeech=adjective&minCorpusCount=" + minCorpusCount + "&maxCorpusCount=-1&minDictionaryCount=1&maxDictionaryCount=-1&minLength=5&maxLength=-1&limit=1&api_key=" + WordnikAPIKey,
 		  success: function(data) {
-			noun = eval(data);
-			var word = noun.pick().word;
+			nouns = eval(data);
+			var word = nouns.pick().word;
 			q = word;
 			console.log("	got seed word " + word);
 
@@ -67,30 +78,36 @@ to repeatedly generate album names along with an album cover
 
 	function generate(query)
 	{
+		// IMAGE FOR DISPLAY
 		console.log("Fetching images for subject " + query); 
 		$.ajax({
 		  url: 'https://api.flickr.com/services/rest/?method=flickr.photos.search&text=' + query + '&format=json&nojsoncallback=1&api_key=' + FlickrAPIKey,
 		  success: function(data) {	
 			console.log("	got images");
+			// assemble Flickr image URL (as per https://www.flickr.com/services/api/misc.urls.html)
 			var photo = data.photos.photo.pick();
 			var imgUrl = "https://farm" + photo.farm + ".staticflickr.com/" + photo.server + "/" + photo.id + "_" + photo.secret + "_d.jpg";
 			
 			$('#imagebox').html('');
-			$('#imagebox').append('<img id="image" src="image.php?p=' + imgUrl + '" width="500px" height = "500px"/>');
+			$('#imagebox').append('<img id="image" src="' + imgUrl + '" width="500px" height="500px"/>');
 		  },
 		  async: true,
 		  dataType:"json"
-		});	
+		});		
 	}
-	</script>
+
+	var w;
+	window.onload=getSeedWord()
+</script>
+
 </head>
 
 <body>
 	<h1 style="font-size: 50px">ALBUM GENERATOR</h1>
-	<div style="text-align: center" id="imagebox">
-		<h2 id="noun"> </h2><h2 id="adjective"></h2>
-		<img id="image" style="width: 500px; height: 500px;" />
+	<div id="imagebox" style="align-items: center">
 	</div>
+	<div id="adjective"> </div>
+	<div id="query"></div>
 	<br/>
 	<div style="text-align: center">
 		<a href="index.html" class="refreshButton">Regenerate</a>
