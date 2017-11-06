@@ -15,48 +15,64 @@ to repeatedly generate album names along with an album cover
 	<link rel="icon" href="assets/images/favicon.ico" type="image/x-icon">
 	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.0/jquery.min.js"></script>
 	<script>
-		var albumName = '';
-		// WordNik Album Name Generator
-		var wordNikAPI = 'b2586d6863a58469d900b018d4b07df77a423e19b940b2df9';
-		function getAlbumName() {
-			// ajax call to get word
-			$.ajax( {
-				url: 'http://api.wordnik.com:80/v4/words.json/randomWords?hasDictionaryDef=false&includePartOfSpeech=noun&minCorpusCount=100000&minDictionaryCount=1&maxDictionaryCount=-1&minLength=5&maxLength=-1&limit=1&api_key=' + wordNikAPI,
-				success: function(data) {
-					console.log(data);
-					getPhotos(data.results.word);
-				},
-				async: true,
-				dataType: "json"
-			})
-		}
-		
-		// Pulls random photo from photo search
-		// of one of the words in the album name
-		var flickrAPI = '94706d0c5bb8c8ff54fc5cb2d88f3c07';
-		function getPhotos(query) {
-			$.ajax( {
-				url: 'https://api.flickr.com/services/rest/?method=flickr.photos.search&text=' + query + '+famous+landmarks&sort=relevance&format=json&nojsoncallback=1&api_key=' + flickrAPI,
-				success: function(data) {
-					var rand = Math.floor((Math.random() * (data.photos.photo.length)));
-					photo = eval(data.photos.photo[rand]);
-					
-					var imgUrl = "https://farm" + photo.farm + ".staticflickr.com/" + photo.server + "/" + photo.id + "_" + photo.secret + "_d.jpg";
-					
-					$('#photo').html('');
-					$('#photo').append('<img src="' + imgUrl + '" width="500" height="500"/>');
-				},
-				async: true,
-				dataType: "json"
-			});
-		}
+// WordNik
+	var wordnikAPIKey = 'b2586d6863a58469d900b018d4b07df77a423e19b940b2df9';
+	var flickrAPIKey = '94706d0c5bb8c8ff54fc5cb2d88f3c07';
+	var nouns, adjective;
+	
+	function getSeedWord() 
+	{
+		// clear everything
+		$('#imagebox').html('');
+		$('#imagebox').append('<img id="image"/>');
+
+		console.log("Fetching seed word...");
+		var minCorpusCount = 100000;
+		$.ajax({
+		  url: "http://api.wordnik.com/v4/words.json/randomWords?hasDictionaryDef=false&includePartOfSpeech=noun&minCorpusCount=" + minCorpusCount + 			  
+			   "&maxCorpusCount=-1&minDictionaryCount=1&maxDictionaryCount=-1&minLength=5&maxLength=-1&limit=100&api_key=" + WordnikAPIKey,
+		  success: function(data) {
+			nouns = eval(data);
+			var word = nouns.pick().word;
+			q = word;
+			console.log("	got seed word " + word);
+
+			$('#query').html('');
+			$('#query').append(word);
+
+			generate(word);		
+		  },
+		  async: true,
+		  dataType:"json"
+		});
+	}
+
+	function generate(query)
+	{
+		// IMAGE FOR DISPLAY
+		console.log("Fetching images for subject " + query); 
+		$.ajax({
+		  url: 'https://api.flickr.com/services/rest/?method=flickr.photos.search&text=' + query + '&format=json&nojsoncallback=1&api_key=' + FlickrAPIKey,
+		  success: function(data) {	
+			console.log("	got images");
+			// assemble Flickr image URL (as per https://www.flickr.com/services/api/misc.urls.html)
+			var photo = data.photos.photo.pick();
+			var imgUrl = "https://farm" + photo.farm + ".staticflickr.com/" + photo.server + "/" + photo.id + "_" + photo.secret + "_d.jpg";
+			
+			$('#imagebox').html('');
+			$('#imagebox').append('<img id="image" src="image.php?p=' + imgUrl + '"/>');
+		  },
+		  async: true,
+		  dataType:"json"
+		});	
+	}
 	</script>
 </head>
 
 <body>
 	<h1 style="font-size: 50px">ALBUM GENERATOR</h1>
-	<div style="text-align: center">
-		<img id="photo" style="width: 500px; height: 500px;"/>
+	<div style="text-align: center" id="imagebox">
+		<img id="image" style="width: 500px; height: 500px;" />
 	</div>
 	<br/>
 	<div style="text-align: center">
